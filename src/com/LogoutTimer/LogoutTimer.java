@@ -152,9 +152,4 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 	public boolean playerHasPermissionToLogout(String playerName) {
 		return this.permissionToLog.containsKey(playerName);
 	}
-	
-	public void profileMaps() {
-		getLogger().info("Players waiting to log: [" + this.logoutCountdown.size() + "]");
-		getLogger().info("Players with permission to log: [" + this.permissionToLog.size() + "]");
-	}
 }
