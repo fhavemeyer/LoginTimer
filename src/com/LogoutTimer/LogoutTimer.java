@@ -35,7 +35,6 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 		this.permissionToLog = new HashMap<>();
 		
 		this.countdown = getConfig().getInt("logout_countdown");
-		this.saveConfig();
 		
 		if (getServer().getPluginManager().getPlugin("CombatTag") != null) {
 			combatApi = new CombatTagApi((CombatTag)getServer().getPluginManager().getPlugin("CombatTag"));
