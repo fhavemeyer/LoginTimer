@@ -6,4 +6,4 @@ If the player moves while the countdown is active, it will be canceled. Likewise
 
 config.yml:
 
-logout_countdown: <integer value in seconds>
+logout_countdown: integer value in seconds
