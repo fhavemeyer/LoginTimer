@@ -82,11 +82,11 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 		
 		if (!from.equals(to)) {
 			if (this.playerHasPermissionToLogout(playerName)) {
-				this.sendRedMessage(moved, "You have moved! You must restart your logout request!");
 				this.removeLogoutPermissionForPlayer(playerName);
+				moved.sendMessage(ChatColor.RED + "You have moved! You must restart your logout request!");
 			} else if (this.logoutCountdown.containsKey(playerName)) {
 				this.stopCountdownForPlayer(playerName);
-				this.sendRedMessage(moved, "You have moved! Canceling logout request!");
+				moved.sendMessage(ChatColor.RED + "You have moved! Canceling logout request!");
 			}
 		}
 	}
@@ -97,15 +97,15 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 			String playerName = p.getPlayerListName();
 			
 			if (combatApi.isInCombat(p)) {
-				this.sendRedMessage(p, "You are currently in combat and can't log out!");
+				p.sendMessage(ChatColor.RED + "You are currently in combat and can't log out!");
 			} else if (logoutCountdown.get(playerName) != null) {
-				this.sendRedMessage(p, "You have already initiated logout!");
+				p.sendMessage(ChatColor.RED + "You have already initiated logout!");
 			} else {
 				this.logoutCountdown.put(p.getPlayerListName(), this.countdown);
 			}
 			return true;
 		} else {
-			sender.sendMessage("You must be a player to use this command.");
+			sender.sendMessage(ChatColor.RED + "You must be a player to use this command.");
 		}
 		return false;
 	}
@@ -125,10 +125,10 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 				if (timeLeft == 0) {
 					this.stopCountdownForPlayer(playerName);
 					this.giveLogoutPermissionToPlayer(playerName);
-					this.sendGreenMessage(logger, "You may now safely log out!");
+					logger.sendMessage(ChatColor.GREEN + "You may now safely log out!");
 				} else {
 					entry.setValue(timeLeft);
-					this.sendRedMessage(logger,  Integer.toString(timeLeft) + " seconds remaining!");
+					logger.sendMessage(ChatColor.RED + Integer.toString(timeLeft) + " seconds remaining!");
 				}
 			}
 		}
@@ -157,13 +157,5 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 	public void profileMaps() {
 		getLogger().info("Players waiting to log: [" + this.logoutCountdown.size() + "]");
 		getLogger().info("Players with permission to log: [" + this.permissionToLog.size() + "]");
-	}
-	
-	private void sendRedMessage(Player p, String message) {
-		p.sendMessage(ChatColor.RED + message);
-	}
-	
-	private void sendGreenMessage(Player p, String message) {
-		p.sendMessage(ChatColor.GREEN + message);
 	}
 }
