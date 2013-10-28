@@ -120,14 +120,14 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 				// Player is already tagged
 				this.stopCountdownForPlayer(playerName);
 			} else {
-				timeLeft -= 1;
 				if (timeLeft == 0) {
 					this.stopCountdownForPlayer(playerName);
 					this.giveLogoutPermissionToPlayer(playerName);
 					logger.sendMessage(ChatColor.GREEN + "You may now safely log out!");
 				} else {
+					logger.sendMessage(ChatColor.RED + Integer.toString(timeLeft) + " seconds until you may safely log out!");
+					timeLeft -= 1;
 					entry.setValue(timeLeft);
-					logger.sendMessage(ChatColor.RED + Integer.toString(timeLeft) + " seconds remaining!");
 				}
 			}
 		}
