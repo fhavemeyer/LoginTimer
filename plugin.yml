@@ -1,0 +1,14 @@
+name: LogoutTimer
+main: com.LogoutTimer.LogoutTimer
+version: 1.0
+commands:
+  logout:
+    description: Logs out a player without leaving an NPC after a delay
+    usage: /<command>
+    permission: LogoutTimer.logout
+    permission-message: You dont have /<permission>
+    aliases: [lo]
+
+permissions:
+  LogoutTimer.*:
+    description: Give access to all LogoutTimer commands
