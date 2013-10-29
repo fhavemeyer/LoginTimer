@@ -120,6 +120,10 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 			if (logger == null) {
 				// Player is already tagged
 				this.stopCountdownForPlayer(playerName);
+			} else if (combatApi.isInCombat(logger)) {
+				logger.sendMessage(ChatColor.RED + "You cannot log out while in combat!");
+				this.stopCountdownForPlayer(playerName);
+				this.removeLogoutPermissionForPlayer(playerName);
 			} else {
 				if (timeLeft == 0) {
 					this.stopCountdownForPlayer(playerName);
