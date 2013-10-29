@@ -23,6 +23,7 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 	private Integer scheduledTaskID;
 	
 	private int countdown;
+	private String disconnectMessage;
 	
 	private HashMap<String, Integer> logoutCountdown;
 	private HashMap<String, Boolean> permissionToLog;
@@ -35,6 +36,7 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 		this.permissionToLog = new HashMap<>();
 		
 		this.countdown = getConfig().getInt("logout_countdown");
+		this.disconnectMessage = getConfig().getString("disconnect_message");
 		
 		if (getServer().getPluginManager().getPlugin("CombatTag") != null) {
 			combatApi = new CombatTagApi((CombatTag)getServer().getPluginManager().getPlugin("CombatTag"));
@@ -56,7 +58,6 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 	public void onQuit(PlayerQuitEvent e) {
 		final Player logged = e.getPlayer();
 		String playerName = logged.getPlayerListName();
-		getLogger().info("Player quit: " + playerName);
 		
 		if (!combatApi.isInCombat(logged)) {
 			if (this.playerHasPermissionToLogout(playerName)) {
@@ -85,7 +86,7 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 				moved.sendMessage(ChatColor.RED + "You have moved! You must restart your logout request!");
 			} else if (this.logoutCountdown.containsKey(playerName)) {
 				this.stopCountdownForPlayer(playerName);
-				moved.sendMessage(ChatColor.RED + "You have moved! Canceling logout request!");
+				moved.sendMessage(ChatColor.RED + "You have moved! Canceling logout!");
 			}
 		}
 	}
@@ -123,9 +124,9 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 				if (timeLeft == 0) {
 					this.stopCountdownForPlayer(playerName);
 					this.giveLogoutPermissionToPlayer(playerName);
-					logger.sendMessage(ChatColor.GREEN + "You may now safely log out!");
+					logger.kickPlayer(this.disconnectMessage);
 				} else {
-					logger.sendMessage(ChatColor.RED + Integer.toString(timeLeft) + " seconds until you may safely log out!");
+					logger.sendMessage(ChatColor.RED + Integer.toString(timeLeft) + " seconds until you are safely loged out!");
 					timeLeft -= 1;
 					entry.setValue(timeLeft);
 				}
