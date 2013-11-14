@@ -1,8 +1,8 @@
-This plugin requires players to enter a command before logging out, or a CombatTag NPC will be left in their place for a duration defined by the server's CombatTag configuration.
+This plugin requires players to enter a command in order to logout safely, or a CombatTag NPC will be left in their place for a duration defined by the server's CombatTag configuration. Once a player issues a logout request through the logout command, a countdown will begin. If no player action events cancel the countdown, the player will be safely disconnected with a configurable message.
 
-If the player moves while the countdown is active, it will be canceled. Likewise, if the player moves once the countdown has completed but before disconnecting, the player will have to begin the countdown anew. Countodwn duration is configurable in the plugin's config.yml
+The events that cancel a player's logout countdown are configurable. By default, moving, chatting, and interacting with blocks will cancel the countdown.
 
-/logout [/lo] - command to safely log a player out
+/logout [/lo, /l] - command to safely log a player out
 
 config.yml:
 
