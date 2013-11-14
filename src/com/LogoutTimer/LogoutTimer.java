@@ -53,6 +53,11 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 			combatApi = new CombatTagApi((CombatTag)getServer().getPluginManager().getPlugin("CombatTag"));
 		}
 		
+		if (combatApi == null) {
+			getLogger().severe("CombatTag not loaded! Disabling LogoutTimer!");
+			this.setEnabled(false);
+		}
+		
 		this.scheduledTaskID = getServer().getScheduler().scheduleSyncRepeatingTask(this, new LogoutCountdownTask(this), 20, 20);
 		
 		getLogger().info("LogoutTimer initialized.");
