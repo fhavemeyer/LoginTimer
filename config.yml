@@ -4,4 +4,3 @@ cancel_on:
   chat: true
   interact: true
   move: true
-  portal: true

@@ -10,7 +10,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.command.*;
 import org.bukkit.util.Vector;
 import org.bukkit.ChatColor;
@@ -32,7 +31,6 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 	private boolean cancelOnMove;
 	private boolean cancelOnChat;
 	private boolean cancelOnInteract;
-	private boolean cancelOnPortal;
 	
 	private HashMap<String, Integer> logoutCountdown;
 	private HashMap<String, Boolean> permissionToLog;
@@ -50,7 +48,6 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 		this.cancelOnMove = getConfig().getBoolean("cancel_on.move");
 		this.cancelOnChat = getConfig().getBoolean("cancel_on.chat");
 		this.cancelOnInteract = getConfig().getBoolean("cancel_on.interact");
-		this.cancelOnPortal = getConfig().getBoolean("cancel_on.portal");
 		
 		if (getServer().getPluginManager().getPlugin("CombatTag") != null) {
 			combatApi = new CombatTagApi((CombatTag)getServer().getPluginManager().getPlugin("CombatTag"));
@@ -112,13 +109,6 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 		}
 	}
 	
-	@EventHandler
-	public void onPlayerPortalEvent(PlayerPortalEvent e) {
-		if (this.cancelOnPortal) {
-			this.checkAndCancelLogout(e.getPlayer(), "You cannot use a portal while logging out!");
-		}
-	}
-	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender instanceof Player) {
 			Player p = (Player)sender;
@@ -131,6 +121,7 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 			} else {
 				this.logoutCountdown.put(p.getPlayerListName(), this.countdown);
 			}
+			
 			return true;
 		} else {
 			sender.sendMessage(ChatColor.RED + "You must be a player to use this command.");
