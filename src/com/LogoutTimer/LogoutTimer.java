@@ -8,6 +8,8 @@ import org.bukkit.event.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.command.*;
 import org.bukkit.util.Vector;
 import org.bukkit.ChatColor;
@@ -24,6 +26,7 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 	
 	private int countdown;
 	private String disconnectMessage;
+	private String cancelMessage = "Canceling logout!";
 	
 	private HashMap<String, Integer> logoutCountdown;
 	private HashMap<String, Boolean> permissionToLog;
@@ -73,22 +76,23 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 	
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e) {
-		final Player moved = e.getPlayer();
-		String playerName = moved.getPlayerListName();
-		
 		// Vector.equals(vec) has been giving me problems when rotating the mouse, so let's cast these to ints
 		Vector from = new Vector((int)e.getFrom().getX(), (int)e.getFrom().getY(), (int)e.getFrom().getZ());
 		Vector to = new Vector((int)e.getTo().getX(), (int)e.getTo().getY(), (int)e.getTo().getZ());
 		
 		if (!from.equals(to)) {
-			if (this.playerHasPermissionToLogout(playerName)) {
-				this.removeLogoutPermissionForPlayer(playerName);
-				moved.sendMessage(ChatColor.RED + "You have moved! You must restart your logout request!");
-			} else if (this.logoutCountdown.containsKey(playerName)) {
-				this.stopCountdownForPlayer(playerName);
-				moved.sendMessage(ChatColor.RED + "You have moved! Canceling logout!");
-			}
+			this.checkAndCancelLogout(e.getPlayer(), "You have moved!");
 		}
+	}
+	
+	@EventHandler
+	public void onPlayerInteractEvent(PlayerInteractEvent e) {
+		this.checkAndCancelLogout(e.getPlayer(), "You have interacted with a block!");
+	}
+	
+	@EventHandler
+	public void onAsyncPlayerChatEvent(AsyncPlayerChatEvent e) {
+		this.checkAndCancelLogout(e.getPlayer(), "You have used chat!");
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -130,11 +134,23 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 					this.giveLogoutPermissionToPlayer(playerName);
 					logger.kickPlayer(this.disconnectMessage);
 				} else {
-					logger.sendMessage(ChatColor.RED + Integer.toString(timeLeft) + " seconds until you are safely loged out!");
+					logger.sendMessage(ChatColor.RED + Integer.toString(timeLeft) + " seconds until you are safely logged out!");
 					timeLeft -= 1;
 					entry.setValue(timeLeft);
 				}
 			}
+		}
+	}
+	
+	public void checkAndCancelLogout(Player p, String customMessage) {
+		String playerName = p.getDisplayName();
+		customMessage = (customMessage != null ? customMessage + " " : "");
+		
+		if (this.playerHasPermissionToLogout(playerName)) {
+			this.removeLogoutPermissionForPlayer(playerName);
+		} else if (this.logoutCountdown.containsKey(playerName)) {
+			this.stopCountdownForPlayer(playerName);
+			p.sendMessage(ChatColor.RED + customMessage + this.cancelMessage);
 		}
 	}
 	
