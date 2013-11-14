@@ -7,7 +7,7 @@ commands:
     usage: /<command>
     permission: LogoutTimer.logout
     permission-message: You dont have /<permission>
-    aliases: [lo]
+    aliases: [lo, l]
 
 permissions:
   LogoutTimer.*:

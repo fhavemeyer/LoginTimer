@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.command.*;
 import org.bukkit.util.Vector;
 import org.bukkit.ChatColor;
@@ -28,6 +29,11 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 	private String disconnectMessage;
 	private String cancelMessage = "Canceling logout!";
 	
+	private boolean cancelOnMove;
+	private boolean cancelOnChat;
+	private boolean cancelOnInteract;
+	private boolean cancelOnPortal;
+	
 	private HashMap<String, Integer> logoutCountdown;
 	private HashMap<String, Boolean> permissionToLog;
 	
@@ -40,6 +46,11 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 		
 		this.countdown = getConfig().getInt("logout_countdown");
 		this.disconnectMessage = getConfig().getString("disconnect_message");
+		
+		this.cancelOnMove = getConfig().getBoolean("cancel_on.move");
+		this.cancelOnChat = getConfig().getBoolean("cancel_on.chat");
+		this.cancelOnInteract = getConfig().getBoolean("cancel_on.interact");
+		this.cancelOnPortal = getConfig().getBoolean("cancel_on.portal");
 		
 		if (getServer().getPluginManager().getPlugin("CombatTag") != null) {
 			combatApi = new CombatTagApi((CombatTag)getServer().getPluginManager().getPlugin("CombatTag"));
@@ -76,23 +87,36 @@ public class LogoutTimer extends JavaPlugin implements Listener {
 	
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e) {
-		// Vector.equals(vec) has been giving me problems when rotating the mouse, so let's cast these to ints
-		Vector from = new Vector((int)e.getFrom().getX(), (int)e.getFrom().getY(), (int)e.getFrom().getZ());
-		Vector to = new Vector((int)e.getTo().getX(), (int)e.getTo().getY(), (int)e.getTo().getZ());
-		
-		if (!from.equals(to)) {
-			this.checkAndCancelLogout(e.getPlayer(), "You have moved!");
+		if (this.cancelOnMove) {
+			// Vector.equals(vec) has been giving me problems when rotating the mouse, so let's cast these to ints
+			Vector from = new Vector((int)e.getFrom().getX(), (int)e.getFrom().getY(), (int)e.getFrom().getZ());
+			Vector to = new Vector((int)e.getTo().getX(), (int)e.getTo().getY(), (int)e.getTo().getZ());
+			
+			if (!from.equals(to)) {
+				this.checkAndCancelLogout(e.getPlayer(), "You have moved!");
+			}
 		}
 	}
 	
 	@EventHandler
 	public void onPlayerInteractEvent(PlayerInteractEvent e) {
-		this.checkAndCancelLogout(e.getPlayer(), "You have interacted with a block!");
+		if (this.cancelOnInteract) {
+			this.checkAndCancelLogout(e.getPlayer(), "You have interacted with a block!");
+		}
 	}
 	
 	@EventHandler
 	public void onAsyncPlayerChatEvent(AsyncPlayerChatEvent e) {
-		this.checkAndCancelLogout(e.getPlayer(), "You have used chat!");
+		if (this.cancelOnChat) {
+			this.checkAndCancelLogout(e.getPlayer(), "You have used chat!");
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerPortalEvent(PlayerPortalEvent e) {
+		if (this.cancelOnPortal) {
+			this.checkAndCancelLogout(e.getPlayer(), "You cannot use a portal while logging out!");
+		}
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
