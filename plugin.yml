@@ -10,5 +10,6 @@ commands:
     aliases: [lo, l]
 
 permissions:
-  LogoutTimer.*:
+  LogoutTimer.logout:
     description: Give access to all LogoutTimer commands
+    default: true
